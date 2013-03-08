@@ -36,6 +36,9 @@
 /* The width of the preview pages. */
 @property (nonatomic, assign) UIEdgeInsets previewInsets;
 
+/*! Manually specifies the size of the page - default page is size of the view (added) */
+@property (nonatomic, assign) CGSize pageSize;
+
 /*
  * Makes the page at the requested index visible.
  */

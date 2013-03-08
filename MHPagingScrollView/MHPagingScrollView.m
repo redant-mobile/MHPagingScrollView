@@ -24,6 +24,7 @@
 {
 	_recycledPages = [[NSMutableSet alloc] init];
 	_visiblePages  = [[NSMutableSet alloc] init];
+    _pageSize = CGSizeZero;
 
 	self.pagingEnabled = YES;
 	self.showsVerticalScrollIndicator = NO;
@@ -73,7 +74,7 @@
 		[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
 	}
 
-	self.contentOffset = CGPointMake(self.bounds.size.width * index, 0);
+	self.contentOffset = CGPointMake(self.pageSize.width * index, 0);
 
 	if (animated)
 		[UIView commitAnimations];
@@ -81,7 +82,7 @@
 
 - (NSUInteger)indexOfSelectedPage
 {
-	CGFloat width = self.bounds.size.width;
+	CGFloat width = self.pageSize.width;
 	int currentPage = (self.contentOffset.x + width/2.0f) / width;
 	return currentPage;
 }
@@ -93,8 +94,18 @@
 
 - (CGSize)contentSizeForPagingScrollView
 {
-	CGRect rect = self.bounds;
-	return CGSizeMake(rect.size.width * [self numberOfPages], rect.size.height);
+    return CGSizeMake(self.pageSize.width * [self numberOfPages], self.pageSize.height);
+}
+
+- (CGSize)pageSize
+{
+    if (CGSizeEqualToSize(_pageSize, CGSizeZero))
+    {
+        return self.bounds.size;
+    }
+    else {
+        return _pageSize;
+    }
 }
 
 - (BOOL)isDisplayingPageForIndex:(NSUInteger)index
@@ -121,15 +132,15 @@
 
 - (CGRect)frameForPageAtIndex:(NSUInteger)index
 {
-	CGRect rect = self.bounds;
-	rect.origin.x = rect.size.width * index;
+    CGRect rect = CGRectIntegral(CGRectMake(self.pageSize.width * index, 0, self.pageSize.width, self.pageSize.height));
 	return rect;
 }
 
 - (void)tilePages 
 {
 	CGRect visibleBounds = self.bounds;
-	CGFloat pageWidth = CGRectGetWidth(visibleBounds);
+//	CGFloat pageWidth = CGRectGetWidth(visibleBounds);
+    CGFloat pageWidth = self.pageSize.width;
 	visibleBounds.origin.x -= _previewInsets.left;
 	visibleBounds.size.width += (_previewInsets.left + _previewInsets.right);
 
@@ -180,7 +191,7 @@
 - (void)beforeRotation
 {
 	CGFloat offset = self.contentOffset.x;
-	CGFloat pageWidth = self.bounds.size.width;
+	CGFloat pageWidth = self.pageSize.width;
 
 	if (offset >= 0)
 		_firstVisiblePageIndexBeforeRotation = floorf(offset / pageWidth);
@@ -197,7 +208,7 @@
 	for (MHPage *page in _visiblePages)
 		page.view.frame = [self frameForPageAtIndex:page.index];
 
-	CGFloat pageWidth = self.bounds.size.width;
+	CGFloat pageWidth = self.pageSize.width;
 	CGFloat newOffset = (_firstVisiblePageIndexBeforeRotation + _percentScrolledIntoFirstVisiblePage) * pageWidth;
 	self.contentOffset = CGPointMake(newOffset, 0);
 }
