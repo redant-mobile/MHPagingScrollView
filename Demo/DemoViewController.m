@@ -11,25 +11,15 @@
 {
 	[super viewDidLoad];
 
-	_numPages = 2;
-
-	self.pagingScrollView.previewInsets = UIEdgeInsetsMake(0.0f, 50.0f, 0.0f, 50.0f);
+	_numPages = 20;
+    self.pagingScrollView.pageSize = CGSizeMake(100, self.pagingScrollView.bounds.size.height);
+    self.pagingScrollView.pagingEnabled = NO;
 	[self.pagingScrollView reloadPages];
-
-	self.pageControl.currentPage = 0;
-	self.pageControl.numberOfPages = _numPages;
 }
 
 - (void)didReceiveMemoryWarning
 {
 	[self.pagingScrollView didReceiveMemoryWarning];
-}
-
-#pragma mark - Actions
-
-- (IBAction)pageTurn
-{
-	[self.pagingScrollView selectPageAtIndex:self.pageControl.currentPage animated:YES];
 }
 
 #pragma mark - View Controller Rotation
@@ -53,18 +43,12 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)theScrollView
 {
-	self.pageControl.currentPage = [self.pagingScrollView indexOfSelectedPage];
 	[self.pagingScrollView scrollViewDidScroll];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)theScrollView
 {
-	if ([self.pagingScrollView indexOfSelectedPage] == _numPages - 1)
-	{
-		_numPages++;
-		[self.pagingScrollView reloadPages];
-		self.pageControl.numberOfPages = _numPages;
-	}
+
 }
 
 #pragma mark - MHPagingScrollViewDelegate
